@@ -692,11 +692,11 @@
     function loadAllItems() {
         $("#item-body").empty();
         $.ajax({
-            url: "http://localhost:8081/mypos/item?option=GETALL",
+            url: "http://localhost:8081/pos/api/v1/item",
             method: "GET",
             success: function (resp) {
                 for (const item of resp.data) {
-                    let row = `<tr><td>${item.code}</td><td>${item.name}</td><td>${item.price}</td><td>${item.qty}</td></tr>`;
+                    let row = `<tr><td>${item.code}</td><td>${item.description}</td><td>${item.unitPrice}</td><td>${item.qtyOnHand}</td></tr>`;
                     $("#itemTable").append(row);
                 }
 
@@ -711,7 +711,7 @@
 
         let data = $("#itemForm").serialize();
         $.ajax({
-            url: "http://localhost:8081/mypos/item",
+            url: "http://localhost:8081/pos/api/v1/item",
             method: "POST",
             data:data,
             success:function (res){
@@ -729,7 +729,7 @@
         let itemCode = $("#txtItemCode").val();
 
         $.ajax({
-            url:"http://localhost:8081/mypos/item?itemID="+itemCode,
+            url:"http://localhost:8081/pos/api/v1/item?code="+itemCode,
             method: "DELETE",
             success:function (res){
                 console.log(res);
@@ -759,7 +759,7 @@
         }
 
         $.ajax({
-            url: "http://localhost:8081/mypos/item",
+            url: "http://localhost:8081/pos/api/v1/item",
             method: "PUT",
             contentType: "application/json",
             data: JSON.stringify(itemOb), // format js object to valid json string
