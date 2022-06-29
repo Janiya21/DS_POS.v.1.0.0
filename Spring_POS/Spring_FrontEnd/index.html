@@ -534,7 +534,7 @@
     function loadAllCustomers() {
         $("#customer-body").empty();
         $.ajax({
-            url: "http://localhost:8081/mapper/customer",
+            url: "http://localhost:8081/pos/api/v1/customer",
             method: "GET",
             success: function (resp) {
                 for (const customer of resp.data) {
