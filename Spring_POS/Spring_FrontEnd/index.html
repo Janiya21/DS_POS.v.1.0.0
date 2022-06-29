@@ -554,7 +554,7 @@
     $("#addNewCustomer").click(function (){
         let data = $("#customerForm").serialize();
         $.ajax({
-            url: "http://localhost:8081/mapper/customer",
+            url: "http://localhost:8081/pos/api/v1/customer",
             method: "POST",
             // contentType:"application/x-www-form-urlencoded",
             data:data,
@@ -576,7 +576,7 @@
         let customerID = $("#txtCustomerId").val();
 
         $.ajax({
-            url:"http://localhost:8081/mapper/customer?id="+customerID,
+            url:"http://localhost:8081/pos/api/v1/customer?id="+customerID,
             method: "DELETE",
             success:function (res){
                 if (res.code === 200) {
@@ -601,7 +601,7 @@
         }
 
         $.ajax({
-            url: "http://localhost:8081/mapper/customer",
+            url: "http://localhost:8081/pos/api/v1/customer",
             method: "PUT",
             contentType: "application/json",
             data: JSON.stringify(cusOb), // format js object to valid json string

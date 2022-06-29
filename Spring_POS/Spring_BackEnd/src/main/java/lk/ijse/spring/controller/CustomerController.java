@@ -25,23 +25,23 @@ public class CustomerController {
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseUtil saveCustomer(@ModelAttribute CustomerDTO customer) {
         customerService.saveCustomer(customer);
-        return new ResponseUtil(200,"Save",null);
+        return new ResponseUtil(200,"Successfully Saved !!",null);
     }
 
     @PutMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseUtil updateCustomer(@RequestBody CustomerDTO customer) {
         customerService.updateCustomer(customer);
-        return new ResponseUtil(200,"Updated",null);
+        return new ResponseUtil(200,"Successfully Updated !!",null);
     }
 
     @DeleteMapping(params = {"id"},produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseUtil deleteCustomer(@RequestParam String id) {
         customerService.deleteCustomer(id);
-        return new ResponseUtil(200,"Deleted",null);
+        return new ResponseUtil(200,"Successfully Deleted !!",null);
     }
 
     @GetMapping(path = "/{id}",produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseUtil searchCustomer(@PathVariable String id) {
-        return new ResponseUtil(200,"Ok",customerService.searchCustomer(id));
+        return new ResponseUtil(200,"Successfully Found !!",customerService.searchCustomer(id));
     }
 }
