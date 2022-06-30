@@ -45,5 +45,9 @@ public class ItemController {
         return new ResponseUtil(200,"Item Successfully Collected",itemService.searchItem(code));
     }
 
+    @GetMapping(path = "all")
+    public ResponseUtil getAllIds() {
+        return new ResponseUtil(200,"Successfully Returned !!",itemService.getAllItemIDS());
+    }
 
 }

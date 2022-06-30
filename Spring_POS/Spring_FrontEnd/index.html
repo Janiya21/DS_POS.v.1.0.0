@@ -796,11 +796,11 @@
 
         $("#itemID-selector").empty();
         $.ajax({
-            url: "http://localhost:8081/mypos/item?option=GETIDS",
+            url: "http://localhost:8081/pos/api/v1/item/all",
             method: "GET",
             success: function (resp) {
                 for (const item of resp.data) {
-                    let row = `<option value="${item.code}">${item.code}</option>`;
+                    let row = `<option value="${item}">${item}</option>`;
                     $("#itemID-selector").append(row);
                 }
             }
@@ -827,13 +827,12 @@
         console.log(itemID + " this is ID");
 
         $.ajax({
-            url: "http://localhost:8081/mypos/item?option=GETITEM&code="+itemID,
+            url: "http://localhost:8081/pos/api/v1/item/"+itemID,
             method: "GET",
             success: function (resp) {
-                console.log(resp.data.id + " ado " + resp.data.name + "  ,  " + resp.data.price);
-                $("#itemName").val(resp.data.name);
-                $("#unitPrice").val(resp.data.price);
-                $("#itemQty").val(resp.data.qty);
+                $("#itemName").val(resp.data.description);
+                $("#unitPrice").val(resp.data.unitPrice);
+                $("#itemQty").val(resp.data.qtyOnHand);
             }
         });
     });

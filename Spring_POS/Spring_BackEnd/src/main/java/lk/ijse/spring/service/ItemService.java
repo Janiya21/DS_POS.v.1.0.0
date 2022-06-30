@@ -10,4 +10,5 @@ public interface ItemService {
     void updateItem(ItemDTO dto);
     ItemDTO searchItem(String code);
     List<ItemDTO> getAllItems();
+    List<String> getAllItemIDS();
 }
