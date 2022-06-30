@@ -12,18 +12,7 @@ import java.util.List;
 
 public interface CustomerRepo extends JpaRepository<Customer, String> {
 
-    Customer findCustomerByName(String name);
-
-    Customer findCustomerByAddress(String address);
-
-    Customer findCustomerByNameAndAddress(String name, String address);
-
-    Customer findByName(String name);
-
-    Customer getByName(String name);
-
-    Customer queryByName(String name);
-
-    List<Customer> searchByName(String name);
+    @Query(value = "select id from Customer", nativeQuery = true)
+    List<String> getAllCustomerIds();
 
 }

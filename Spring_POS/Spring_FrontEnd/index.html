@@ -784,11 +784,11 @@
     $("#placeOrder").click(function (){
         $("#customerID-selector").empty();
         $.ajax({
-            url: "http://localhost:8081/mypos/customer?option=GETIDS",
+            url: "http://localhost:8081/pos/api/v1/customer/all",
             method: "GET",
             success: function (resp) {
                 for (const customer of resp.data) {
-                    let row = `<option value="${customer.id}">${customer.id}</option>`;
+                    let row = `<option value="${customer}">${customer}</option>`;
                     $("#customerID-selector").append(row);
                 }
             }
@@ -812,12 +812,11 @@
         console.log(customerID + " this is ID");
 
         $.ajax({
-            url: "http://localhost:8081/mypos/customer?option=GETCUSTOMER&id="+customerID,
+            url: "http://localhost:8081/pos/api/v1/customer/"+customerID,
             method: "GET",
             success: function (resp) {
-                console.log(resp.data.id + " ado " + resp.data.name + "  ,  " + resp.data.email);
                 $("#customName").val(resp.data.name);
-                $("#customAddress").val(resp.data.email);
+                $("#customAddress").val(resp.data.address);
                 $("#customTelNo").val(resp.data.telNo);
             }
         });

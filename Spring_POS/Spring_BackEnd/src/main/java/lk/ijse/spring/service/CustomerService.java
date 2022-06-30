@@ -10,4 +10,5 @@ public interface CustomerService {
     void updateCustomer(CustomerDTO dto);
     CustomerDTO searchCustomer(String id);
     List<CustomerDTO> getAllCustomers();
+    List<String> getAllCustomerIDS();
 }
