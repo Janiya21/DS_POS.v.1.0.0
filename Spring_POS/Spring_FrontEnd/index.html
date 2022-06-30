@@ -149,7 +149,7 @@
                         <label for="txtItemCode" id="lblItemId" class="form-label">Item Code</label>
                         <div class="row">
                             <div class="col-10">
-                                <input type="text" name="itemCode" class="form-control" id="txtItemCode" aria-describedby="nameHelp" placeholder="Item Code">
+                                <input type="text" name="code" class="form-control" id="txtItemCode" aria-describedby="nameHelp" placeholder="Item Code">
                             </div>
                             <div class="col-1">
                                 <button type="button"  style="border-radius: 40%">
@@ -161,7 +161,7 @@
                     </div>
                     <div class="mb-3">
                         <label for="txtItemName" class="form-label">Name</label>
-                        <input type="text" name="itemName" class="form-control" id="txtItemName" aria-describedby="nameHelp" placeholder="Item Name">
+                        <input type="text" name="description" class="form-control" id="txtItemName" aria-describedby="nameHelp" placeholder="Item Name">
                         <p class="text-danger float-end txtReq" id="req-txtItemName"></p>
                     </div>
                     <div class="mb-3">
@@ -171,7 +171,7 @@
                     </div>
                     <div class="mb-3">
                         <label for="txtQty" class="form-label">Quantity</label>
-                        <input type="text" name="qty" class="form-control" id="txtQty" aria-describedby="nameHelp" placeholder="Qty">
+                        <input type="text" name="qtyOnHand" class="form-control" id="txtQty" aria-describedby="nameHelp" placeholder="Qty">
                         <p class="text-danger float-end txtReq" id="req-txtItemQty"></p>
                     </div>
 
@@ -526,7 +526,6 @@
         loadCustomersToTextFields(this);
     });
 
-
     $( document ).ready(function() {
         loadAllCustomers();
     });
@@ -715,12 +714,14 @@
             method: "POST",
             data:data,
             success:function (res){
-                if (res.status === 200) {
+                if (res.code === 200) {
                     alert(res.message);
-                    loadAllItems();
+                } else if (res.code === 400) {
+                    alert(res.message);
                 } else {
                     alert(res.data);
                 }
+                loadAllItems();
             }
         })
     });
@@ -732,15 +733,14 @@
             url:"http://localhost:8081/pos/api/v1/item?code="+itemCode,
             method: "DELETE",
             success:function (res){
-                console.log(res);
-                if (res.status === 200) {
+                if (res.code === 200) {
                     alert(res.message);
-                    loadAllItems();
-                } else if (res.status === 400) {
-                    alert(res.data);
+                } else if (res.code === 400) {
+                    alert(res.message);
                 } else {
                     alert(res.data);
                 }
+                loadAllItems();
             },
             error:function (ob, status, t){
                 console.log(ob);
@@ -752,10 +752,10 @@
 
     $("#updateItem").click(function (){
         var itemOb = {
-            id: $("#txtItemCode").val(),
-            name: $("#txtItemName").val(),
-            price: $("#txtUnitPrice").val(),
-            qty: $("#txtQty").val()
+            code: $("#txtItemCode").val(),
+            description: $("#txtItemName").val(),
+            unitPrice: $("#txtUnitPrice").val(),
+            qtyOnHand: $("#txtQty").val()
         }
 
         $.ajax({
@@ -764,14 +764,14 @@
             contentType: "application/json",
             data: JSON.stringify(itemOb), // format js object to valid json string
             success: function (res) {
-                if (res.status === 200) {
+                if (res.code === 200) {
                     alert(res.message);
-                    loadAllItems();
-                } else if (res.status === 400) {
+                } else if (res.code === 400) {
                     alert(res.message);
                 } else {
                     alert(res.data);
                 }
+                loadAllItems();
             },
             error: function (ob, errorStus) {
                 console.log(ob);
@@ -1058,6 +1058,7 @@
 
     /*===========================================================*/
 
+
     $("#orderHistory").click(function (){
         loadOrderHistory();
     });
@@ -1068,37 +1069,39 @@
 
     function loadOrderHistory(){
         $("#tblOrderDetail>tbody").empty();
+
+        let orders = [];
+
         $.ajax({
-            url: "http://localhost:8081/mypos/order?option=GETALL",
+            url: "http://localhost:8081/pos/api/v1/purchase",
             method: "GET",
             success: function (resp) {
                 for (const or of resp.data) {
-                    let row = `<tr><td>${or.id}</td><td>${or.name}</td><td>${or.date}</td><td>${or.discount}</td><td>${or.total}</td></tr>`;
+                    orders.push(or);
+                    let row = `<tr><td>${or.oid}</td><td>${or.customer.name}</td><td>${or.date}</td><td>${or.discount}</td><td>${or.total}</td></tr>`;
                     $("#tblOrderDetail").append(row);
                 }
                 $("#tblOrderDetail-body>tr").click(function (){
-                    getOrderID(this);
+                    getOrderID(this,orders);
                 });
             }
         });
     }
 
-    function getOrderID(row){
+    function getOrderID(row,orders){
 
         $("#tblItemDetail>tbody").empty();
 
-        let cusID = $(row).children(":eq(0)").text();
+        let orderId = $(row).children(":eq(0)").text();
 
-        $.ajax({
-            url: "http://localhost:8081/mypos/placedorders?cusID="+cusID,
-            method: "GET",
-            success: function (resp) {
-                for (const or of resp.data) {
-                    let row = `<tr><td>${or.itemCode}</td><td>${or.qty}</td><td>${or.unitPrice}</td><td>${or.total}</td></tr>`;
+        for (const or of orders) {
+            if(orderId === or.oid){
+                for (let od of or.orderDetails) {
+                    let row = `<tr><td>${od.itemCode}</td><td>${od.qty}</td><td>${od.unitPrice}</td><td>${od.total}</td></tr>`;
                     $("#tblItemDetail").append(row);
                 }
             }
-        });
+        }
     }
 
 </script>
