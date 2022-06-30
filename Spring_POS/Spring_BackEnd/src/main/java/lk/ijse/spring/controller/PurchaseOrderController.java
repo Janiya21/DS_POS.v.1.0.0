@@ -21,6 +21,11 @@ public class PurchaseOrderController {
         return new ResponseUtil(200, "Ok", poService.getAllOrders());
     }
 
+    @GetMapping(path = "lastId")
+    public ResponseUtil getLastId() {
+        return new ResponseUtil(200, "Ok", poService.getLastId());
+    }
+
     @ResponseStatus(HttpStatus.CREATED) //201
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseUtil purchaseOrder(@RequestBody OrdersDTO ordersDTO) {

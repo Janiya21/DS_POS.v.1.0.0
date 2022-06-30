@@ -110,4 +110,9 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
         return mapper.map(ordersRepo.findAll(), new TypeToken<List<OrdersDTO>>() {
         }.getType());
     }
+
+    @Override
+    public String getLastId() {
+        return mapper.map(ordersRepo.getLastID(), String.class);
+    }
 }

@@ -463,6 +463,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
 <script src="model/OrderDTO.js"></script>
 <script src="Temp/TempArrays.js"></script>
+<script src="model/OrderDetailsDTO.js"></script>
+<script src="Temp/OrderDetailsJson.js"></script>
 
 <script>
     $("#register").click(function (){
@@ -861,32 +863,32 @@
 
         function getLastID(){
             return $.ajax({
-                url: "http://localhost:8081/mypos/order?option=GETID",
+                url: "http://localhost:8081/pos/api/v1/purchase/lastId",
                 method: "GET",
-                contentType: "application/json",
             });
         }
 
         getLastID().then( res => {
-            let lst = res.lastId;
+            let lst = res.data;
             console.log("last " + lst);
 
             if(lst === null){
-                nextId= "O-0001";
+                nextId= "O001";
             }else{
-                let number = Number(lst.substr(2,6));
+                let number = Number(lst.substr(1,4));
                 let nextNum = number + 1;
 
+                console.log("Number " + number)
+
                 if(nextNum<10){
-                    nextId = "O-000"+nextNum;
+                    nextId = "O00"+nextNum;
                 }else if(nextNum<100){
-                    nextId = "O-00"+nextNum;
-                }else if(nextNum<1000){
-                    nextId = "O-0"+nextNum;
+                    nextId = "O0"+nextNum;
                 }else{
-                    nextId = "O-1000";
+                    nextId = "O100";
                 }
             }
+
             console.log(nextId + " this is next");
 
             let orderArray = new OrderDTO(nextId,customerId,id,name,qty,price,tot);
@@ -992,64 +994,53 @@
 
     async function loadToOrderTable() {
 
+        let dataArray = [];
+        let lastID;
+
+        for(let od of orders){
+            lastID = od.getORDOrderId();
+            const obj= {
+                "oid":od.getORDOrderId(),
+                "itemCode":od.getORDItemId(),
+                "qty":od.getORDUnits(),
+                "unitPrice":od.getORDUnitPrice(),
+                "total":od.getORDTotal()
+            }
+            dataArray.push(obj);
+        }
+
         let totAmount = Number($("#txtTotBil").val());
         let pureTot = Number($("#txtPureTot").val());
 
-        console.log(" tot $ " + totAmount, pureTot);
+        console.log(" tot  " + totAmount, pureTot);
         let discount = pureTot - totAmount;
 
-        console.log(discount + " O " + pureTot);
-
-        var orderOB  = {
-            "orderId": orders[0].getORDOrderId(),
-            "cusId": orders[0].getORDCustomerId(),
-            "date": "2021-10-09",
-            dis: discount,
-            total: pureTot
-        }
-
-        console.log(orderOB.orderId, orderOB.cusId, orderOB.date, orderOB.dis, orderOB.total)
-
-        function loadToOrder(){
-            return $.ajax({
-                url: "http://localhost:8081/mypos/order",
-                method: "POST",
-                contentType: "application/json",
-                data: JSON.stringify(orderOB),
-            });
-        }
-
-        loadToOrder().then( res =>{
-            if(res.status === 200 || res.status === 400){
-                console.log("orders length ",orders.length);
-                for (let i = 0; i < orders.length; i++) {
-                    let orderID = orders[i].getORDOrderId();
-                    let itemCode = orders[i].getORDItemId();
-                    let qty = orders[i].getORDUnits();
-                    let unitPrice = orders[i].getORDUnitPrice();
-                    let tot = orders[i].getORDTotal();
-
-                    console.log(orderID,itemCode,qty,unitPrice,tot);
-
-                    let orderDetailOB = {
-                        "orderId": orderID,
-                        "itemCode": itemCode,
-                        "quantity":qty,
-                        "uPrice":unitPrice,
-                        "total":tot
-                    }
-
-                    console.log(orderDetailOB.orderId, orderDetailOB.itemCode, orderDetailOB.quantity, orderDetailOB.uPrice, orderDetailOB.total + " fukk")
-
-                    $.ajax({
-                        url: "http://localhost:8081/mypos/placedorders",
-                        method: "POST",
-                        contentType: "application/json",
-                        data: JSON.stringify(orderDetailOB),
-                    });
+        var customerID = $("#customerID-selector").val();
+        $.ajax({
+            url: "http://localhost:8081/pos/api/v1/customer/"+customerID,
+            method: "GET",
+            success: function (resp) {
+                var orderObject =  {
+                    "oid": lastID,
+                    "date": "2022-10-15",
+                    "customer": {
+                        "id":customerID,
+                        "name":resp.data.name,
+                        "address":resp.data.address,
+                        "telNo":resp.data.telNo
+                    },
+                    "discount":discount,
+                    "total":totAmount,
+                    "orderDetails":dataArray
                 }
-            }else{
-                console.log("oh nooo");
+
+                $.ajax({
+                    url: "http://localhost:8081/pos/api/v1/purchase",
+                    method: "POST",
+                    contentType: "application/json",
+                    data: JSON.stringify(orderObject),
+                });
+
             }
         });
     }

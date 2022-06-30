@@ -10,4 +10,5 @@ public interface PurchaseOrderService {
     void updateOrder(OrdersDTO dto);
     OrdersDTO searchOrder(String oid);
     List<OrdersDTO> getAllOrders();
+    String getLastId();
 }
